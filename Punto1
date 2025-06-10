@@ -1,0 +1,98 @@
+import java.util.ArrayList; // Necesitamos esto para crear listas
+import java.util.HashMap;   // Necesitamos esto para crear un mapa (para poder empezar a clasificar)
+import java.util.List;      // Usamos List para las listas de animales
+import java.util.Map;       // Usamos Map para nuestro clasificador
+import java.util.Scanner;   // Necesitamos esto para ver lo que escribe el usuario
+
+public class Principal {
+
+    public static void main(String[] args) {
+
+        // El "lector" nos ayuda a leer(valga la redundancia) lo que escribe el usuario en la consola.
+        Scanner lector = new Scanner(System.in);
+
+        // "todosLosAnimales" es una lista donde guardaremos todos los animales que creemos.
+        List<Animal> todosLosAnimales = new ArrayList<>();
+
+        // "clasificadorDeAnimales" es como un libro donde guardaremos los animales organizados por su tipo (Terrestres, Acuaticos, Aereos)
+        // Cada tipo tendrá su propia lista de animales idependientes.
+        Map<String, List<Animal>> clasificadorDeAnimales = new HashMap<>();
+
+        String quiereSeguir = "si"; // Empezamos diciendo que sí queremos añadir animales
+
+        // esto paso siemprey cunado el usuario diga "si"
+        while (quiereSeguir.equalsIgnoreCase("si")) {
+
+            System.out.println("\n--- Agregar un nuevo animal ---");
+
+            // Pedimos el nombre
+            System.out.print("¿Cómo se llama el animal? ");
+            String nombreAnimal = lector.nextLine(); // Leemos el nombre que escribió el usuario
+
+            // Pedimos el tipo, y validamos para que solo ponga los que pedimos
+            String tipoAnimal = "";
+            boolean tipoValido = false;
+            while (!tipoValido) {
+                System.out.print("¿Qué tipo de animal es? (terrestre, aereo, acuatico): ");
+                tipoAnimal = lector.nextLine().toLowerCase(); //
+
+                if (tipoAnimal.equals("terrestre") || tipoAnimal.equals("aereo") || tipoAnimal.equals("acuatico")) {
+                    tipoValido = true;
+                } else {
+                    System.out.println("¡Ese tipo no es válido! Intenta con 'terrestre', 'aereo' o 'acuatico'.");
+                }
+            }
+
+            // Pedimos el género, y validamos para que solo ponga los que necesitamos
+            String generoAnimal = "";
+            boolean generoValido = false;
+            while (!generoValido) {
+                System.out.print("¿Qué genero tiene? (masculino, femenino): ");
+                generoAnimal = lector.nextLine().toLowerCase();
+
+                if (generoAnimal.equals("masculino") || generoAnimal.equals("femenino")) {
+                    generoValido = true;
+                } else {
+                    System.out.println("¡Ese genero no es válido! Intenta con 'masculino' o 'femenino'.");
+                }
+            }
+
+
+            // Creamos un nuevo objeto Animal con la información que nos dio el usuario
+            Animal nuevoAnimal = new Animal(nombreAnimal, tipoAnimal, generoAnimal);
+
+            // Agregamos el animal a nuestra lista de todos los animales
+            todosLosAnimales.add(nuevoAnimal);
+
+            // Ahora, lo clasificamos en el mapa:
+            String claveTipo = tipoAnimal.substring(0, 1).toUpperCase() + tipoAnimal.substring(1) + "s";
+            if (clasificadorDeAnimales.get(claveTipo) == null) {
+                // Si no hay una lista para este tipo, creamos una nueva.
+                clasificadorDeAnimales.put(claveTipo, new ArrayList<Animal>());
+            }
+            // Ahora que sabemos que hay una lista (ya sea nueva o ya existente),asi que agregamos el animal a esa lista.
+            clasificadorDeAnimales.get(claveTipo).add(nuevoAnimal);
+
+
+            // Preguntamos si quiere agregar otro animal
+            System.out.print("¿Quieres agregar otro animal? (si/no): ");
+            quiereSeguir = lector.nextLine();
+        }
+
+        lector.close();
+        System.out.println("\n--- ¡Aquí están tus animales clasificados! ---");
+
+        // Recorremos cada tipo de animal en nuestro mapa (Terrestres, Acuaticos, Aereos)
+        for (String tipoClave : clasificadorDeAnimales.keySet()) {
+            System.out.println(tipoClave + ":"); // Imprimimos el título del tipo (ej: "Terrestres:")
+
+            // Obtenemos la lista de animales para este tipo
+            List<Animal> listaPorTipo = clasificadorDeAnimales.get(tipoClave);
+
+            // Ahora, recorremos cada animal en esta lista y lo imprimimos
+            for (Animal animalActual : listaPorTipo) {
+                System.out.println("          " + animalActual.getNombre()); // Imprimimos el nombre del animal con espacio
+            }
+        }
+    }
+}
